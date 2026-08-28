@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PlayGameZone - Free Online Games Portal" />
+  <title>PlayGameZone 🎮 Free Online Games</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+
+  <style>
+    /* =========================================================
+       RESET & VARIABLES
+    ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary:    #0a0a0f;
+      --bg-secondary:  #12121c;
+      --bg-card:       #1a1a2e;
+      --bg-nav:        rgba(10, 10, 15, 0.95);
+      --neon-purple:   #a855f7;
+      --neon-blue:     #3b82f6;
+      --neon-cyan:     #06b6d4;
+      --neon-pink:     #ec4899;
+      --text-primary:  #f1f5f9;
+      --text-muted:    #94a3b8;
+      --border-color:  #1e293b;
+      --glow-purple:   0 0 20px rgba(168, 85, 247, 0.4);
+      --glow-blue:     0 0 20px rgba(59, 130, 246, 0.4);
+      --radius-sm:     8px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+      --transition:    all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* =========================================================
+       SCROLLBAR
+    ========================================================= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--neon-purple), var(--neon-blue));
+      border-radius: 3px;
+    }
+
+    /* =========================================================
+       ANIMATED BACKGROUND
+    ========================================================= */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(168,85,247,.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(59,130,246,.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* =========================================================
+       NAVBAR
+    ========================================================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--bg-nav);
+      border-bottom: 1px solid rgba(168,85,247,.2);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0 1.5rem;
+    }
+
+    .navbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .logo-icon {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 8px rgba(168,85,247,.7));
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(168,85,247,.7)); }
+      50%       { filter: drop-shadow(0 0 18px rgba(59,130,246,.9)); }
+    }
+    .logo-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    /* Search */
+    .search-wrapper {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+    .search-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      width: 18px; height: 18px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.7rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: var(--neon-purple);
+      box-shadow: var(--glow-purple);
+    }
+
+    /* Nav right */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* Language Dropdown */
+    .lang-dropdown { position: relative; }
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(168,85,247,.35);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .lang-btn:hover {
+      border-color: var(--neon-purple);
+      box-shadow: var(--glow-purple);
+    }
+    .lang-btn .flag { font-size: 1.1rem; }
+    .lang-btn svg { width: 14px; height: 14px; transition: transform .25s; }
+    .lang-dropdown.open .lang-btn svg { transform: rotate(180deg); }
+
+    .lang-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--bg-card);
+      border: 1px solid rgba(168,85,247,.3);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      min-width: 140px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.6), var(--glow-purple);
+      z-index: 200;
+    }
+    .lang-dropdown.open .lang-menu { display: block; animation: fadeDown .2s ease; }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background .2s;
+    }
+    .lang-option:hover { background: rgba(168,85,247,.15); }
+    .lang-option.active {
+      background: rgba(168,85,247,.2);
+      color: var(--neon-purple);
+      font-weight: 600;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+
+    /* =========================================================
+       AD BANNER - TOP
+    ========================================================= */
+    .ad-banner-top {
+      max-width: 1400px;
+      margin: 1.5rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .ad-slot {
+      background: var(--bg-secondary);
+      border: 1px dashed rgba(168,85,247,.25);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+    .ad-slot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,.04), rgba(59,130,246,.04));
+    }
+    .ad-slot-leaderboard { height: 90px; }
+    .ad-slot-square      { height: 250px; }
+    .ad-slot-label {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .ad-slot-label span:first-child { font-size: 1.4rem; }
+
+    /* =========================================================
+       MAIN LAYOUT
+    ========================================================= */
+    .main-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    .content-area { min-width: 0; }
+    .sidebar      { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* =========================================================
+       HERO SECTION
+    ========================================================= */
+    .hero {
+      background: linear-gradient(135deg, rgba(168,85,247,.12), rgba(59,130,246,.08));
+      border: 1px solid rgba(168,85,247,.2);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(168,85,247,.15), transparent 70%);
+      top: -80px; right: -80px;
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(59,130,246,.12), transparent 70%);
+      bottom: -50px; left: -50px;
+      border-radius: 50%;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-blue) 60%, var(--neon-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+
+    /* =========================================================
+       SECTION TITLES
+    ========================================================= */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 4px; height: 20px;
+      background: linear-gradient(var(--neon-purple), var(--neon-blue));
+      border-radius: 2px;
+    }
+    .see-all {
+      font-size: 0.82rem;
+      color: var(--neon-purple);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid rgba(168,85,247,.3);
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+    }
+    .see-all:hover { background: rgba(168,85,247,.1); }
+
+    /* =========================================================
+       CATEGORY PILLS
+    ========================================================= */
+    .categories {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .cat-pill:hover, .cat-pill.active {
+      background: linear-gradient(135deg, rgba(168,85,247,.25), rgba(59,130,246,.15));
+      border-color: var(--neon-purple);
+      color: var(--neon-purple);
+      box-shadow: var(--glow-purple);
+      transform: translateY(-2px);
+    }
+    .cat-pill span:first-child { font-size: 1rem; }
+
+    /* =========================================================
+       GAME GRID
+    ========================================================= */
+    .games-section { margin-bottom: 2.5rem; }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .game-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(168,85,247,.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,.4), var(--glow-purple);
+    }
+    .game-thumb-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      background: linear-gradient(135deg, var(--bg-secondary), #1e1e35);
+      position: relative;
+      overflow: hidden;
+    }
+    .game-thumb-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,.05), rgba(59,130,246,.05));
+    }
+    .game-card:hover .game-thumb-placeholder::before {
+      background: linear-gradient(135deg, rgba(168,85,247,.12), rgba(59,130,246,.1));
+    }
+    .game-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .game-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: var(--transition);
+      top: 0; left: 0; right: 0;
+      height: calc(100% * 9/16 + 0px);
+      aspect-ratio: 16/9;
+      height: auto;
+    }
+    .game-card:hover .game-overlay { opacity: 1; }
+    .play-icon {
+      width: 54px; height: 54px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(168,85,247,.6);
+      transform: scale(0.85);
+      transition: var(--transition);
+    }
+    .game-card:hover .play-icon { transform: scale(1); }
+    .play-icon svg { width: 24px; height: 24px; fill: white; margin-left: 3px; }
+
+    .game-info {
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .game-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .game-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .game-category {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: rgba(168,85,247,.1);
+      border: 1px solid rgba(168,85,247,.2);
+      border-radius: 4px;
+      padding: 2px 7px;
+    }
+    .game-rating {
+      font-size: 0.75rem;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .play-btn {
+      width: 100%;
+      padding: 0.55rem;
+      background: linear-gradient(135deg, rgba(168,85,247,.2), rgba(59,130,246,.15));
+      border: 1px solid rgba(168,85,247,.35);
+      border-radius: var(--radius-sm);
+      color: var(--neon-purple);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      letter-spacing: .03em;
+    }
+    .play-btn:hover {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      color: white;
+      box-shadow: var(--glow-purple);
+      border-color: transparent;
+    }
+
+    /* =========================================================
+       FEATURED GAME
+    ========================================================= */
+    .featured-game {
+      background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(59,130,246,.08));
+      border: 1px solid rgba(168,85,247,.25);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .featured-game:hover {
+      border-color: rgba(168,85,247,.5);
+      box-shadow: var(--glow-purple);
+    }
+    .featured-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      background: linear-gradient(135deg, #1a1a2e, #0f0f1e);
+      position: relative;
+      overflow: hidden;
+    }
+    .featured-thumb::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,.1), rgba(59,130,246,.1));
+    }
+    .featured-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .featured-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,.7));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .featured-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+    .featured-play-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 25px rgba(168,85,247,.4);
+    }
+    .featured-play-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(168,85,247,.6);
+    }
+
+    /* =========================================================
+       SIDEBAR
+    ========================================================= */
+    .sidebar-widget {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+    .widget-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .top-game-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      transition: var(--transition);
+      border-radius: var(--radius-sm);
+    }
+    .top-game-item:hover { transform: translateX(4px); }
+    .top-rank {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--neon-purple);
+      width: 20px;
+      flex-shrink: 0;
+    }
+    .top-thumb {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+    .top-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* =========================================================
+       MODAL
+    ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+    .modal-overlay.active { display: flex; animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+      background: var(--bg-secondary);
+      border: 1px solid rgba(168,85,247,.35);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 960px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.7), var(--glow-purple);
+      overflow: hidden;
+      animation: slideUp .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px) scale(.96); opacity: 0; }
+      to   { transform: translateY(0) scale(1);      opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(168,85,247,.06), rgba(59,130,246,.04));
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .modal-game-icon { font-size: 1.5rem; }
+    .modal-actions { display: flex; gap: 0.5rem; align-items: center; }
+    .modal-btn {
+      width: 36px; height: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .modal-btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
+    .modal-btn svg { width: 16px; height: 16px; }
+    .modal-close {
+      background: rgba(239,68,68,.15);
+      border-color: rgba(239,68,68,.3);
+      color: #ef4444;
+    }
+    .modal-close:hover { background: #ef4444; color: white; border-color: #ef4444; }
+
+    .modal-iframe-wrap {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    .modal-iframe-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+    .modal-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      gap: 1rem;
+      z-index: 1;
+    }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(168,85,247,.2);
+      border-top-color: var(--neon-purple);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .modal-loading p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .modal-footer {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .modal-footer-actions { display: flex; gap: 0.5rem; }
+    .modal-footer-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .modal-footer-btn:hover { color: var(--neon-purple); border-color: rgba(168,85,247,.4); }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+    footer {
+      margin-top: 4rem;
+      background: var(--bg-secondary);
+      border-top: 1px solid rgba(168,85,247,.15);
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 1.5rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .footer-brand .logo { margin-bottom: 0.75rem; }
+    .footer-brand p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; max-width: 260px; }
+    .footer-col h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-col ul li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .footer-col ul li:hover { color: var(--neon-purple); }
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--neon-purple); }
+    .neon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      background: linear-gradient(135deg, rgba(168,85,247,.15), rgba(59,130,246,.1));
+      border: 1px solid rgba(168,85,247,.3);
+      border-radius: 50px;
+      font-size: 0.75rem;
+      color: var(--neon-purple);
+    }
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+    .toast-container {
+      position: fixed;
+      bottom: 5.5rem;
+      right: 1.5rem;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid rgba(168,85,247,.35);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4), var(--glow-purple);
+      animation: toastIn .35s cubic-bezier(.34,1.56,.64,1);
+      min-width: 220px;
+    }
+    @keyframes toastIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+    /* =========================================================
+       COOKIE BAR
+    ========================================================= */
+    .cookie-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid rgba(168,85,247,.3);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      z-index: 5000;
+      flex-wrap: wrap;
+    }
+    .cookie-bar p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.5;
+    }
+    .cookie-bar p a { color: var(--neon-purple); }
+    .cookie-accept {
+      padding: 0.5rem 1.25rem;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .cookie-accept:hover { transform: translateY(-1px); box-shadow: var(--glow-purple); }
+
+    /* =========================================================
+       UTILITY
+    ========================================================= */
+    .no-results {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    .no-results span { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+
+    .load-more-wrap { text-align: center; margin-top: 2rem; }
+    .load-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      background: transparent;
+      border: 1px solid rgba(168,85,247,.4);
+      border-radius: 50px;
+      color: var(--neon-purple);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .load-more-btn:hover {
+      background: rgba(168,85,247,.1);
+      box-shadow: var(--glow-purple);
+      transform: translateY(-2px);
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+    @media (max-width: 1100px) {
+      .main-wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .search-wrapper { display: none; }
+      .featured-game { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .hero { padding: 2rem 1rem; }
+      .hero-stats { gap: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+      .modal-box { border-radius: var(--radius-md); }
+      .modal-header { padding: 0.75rem 1rem; }
+      .modal-footer { padding: 0.6rem 1rem; flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <div class="logo" onclick="scrollToTop()" style="cursor:pointer;">
+      <span class="logo-icon">🎮</span>
+      <span class="logo-text">PlayGameZone</span>
+    </div>
+
+    <div class="search-wrapper">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="search" class="search-input" id="searchInput"
+        data-i18n-placeholder="search_placeholder"
+        placeholder="Search games..." autocomplete="off" aria-label="Search games" />
+    </div>
+
+    <div class="nav-right">
+      <!-- Language Dropdown -->
+      <div class="lang-dropdown" id="langDropdown">
+        <button class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false"
+                onclick="toggleLang()">
+          <span class="flag" id="currentFlag">🇬🇧</span>
+          <span id="currentLangCode">EN</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+        <div class="lang-menu" role="listbox" id="langMenu">
+          <div class="lang-option active" role="option" onclick="setLang('en')" data-lang="en">🇬🇧 English</div>
+          <div class="lang-option" role="option" onclick="setLang('tr')" data-lang="tr">🇹🇷 Türkçe</div>
+          <div class="lang-option" role="option" onclick="setLang('ru')" data-lang="ru">🇷🇺 Русский</div>
+          <div class="lang-option" role="option" onclick="setLang('de')" data-lang="de">🇩🇪 Deutsch</div>
+        </div>
+      </div>
+
+      <button class="hamburger" aria-label="Toggle search" onclick="toggleMobileSearch()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Search -->
+  <div id="mobileSearch" style="display:none; padding:0.75rem 1rem 0.85rem;">
+    <div class="search-wrapper" style="max-width:100%; display:flex;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="search" class="search-input" id="searchInputMobile"
+        data-i18n-placeholder="search_placeholder"
+        placeholder="Search games..." autocomplete="off" />
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     TOP AD BANNER  (728×90 Leaderboard)
+============================================================ -->
+<div class="ad-banner-top">
+  <div class="ad-slot ad-slot-leaderboard">
+    <!--
+      GOOGLE ADSENSE:
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+      GAMEDISTRIBUTION:
+      <script src="https://html5.api.gamedistribution.com/main.min.js"
+              data-main="https://html5.api.gamedistribution.com/main.min.js"></script>
+    -->
+    <div class="ad-slot-label">
+      <span>📢</span>
+      <span>Advertisement · 728×90 Leaderboard</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN WRAPPER
+============================================================ -->
+<div class="main-wrapper">
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <h1 data-i18n="hero_title">🎮 Play Free Games Online</h1>
+        <p data-i18n="hero_desc">Thousands of free browser games — no download, no login required. Just click and play!</p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-value">500+</div>
+            <div class="stat-label" data-i18n="stat_games">Games</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">10M+</div>
+            <div class="stat-label" data-i18n="stat_players">Players</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">100%</div>
+            <div class="stat-label" data-i18n="stat_free">Free</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED GAME -->
+    <section class="games-section">
+      <div class="section-header">
+        <h2 class="section-title" data-i18n="featured_game">⭐ Featured Game</h2>
+      </div>
+      <div class="featured-game" id="featuredCard" onclick="openModal(FEATURED_GAME)">
+        <div class="featured-thumb">
+          <span style="position:relative;z-index:1;font-size:5rem;">🏎️</span>
+        </div>
+        <div class="featured-info">
+          <div class="featured-label" data-i18n="game_of_week">🔥 Game of the Week</div>
+          <div class="featured-title">Turbo Drift Racing</div>
+          <p class="featured-desc" data-i18n="featured_desc">
+            Experience the ultimate street racing adventure. Drift through neon-lit city circuits and beat the clock!
+          </p>
+          <button class="featured-play-btn">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M8 5v14l11-7z"/></svg>
+            <span data-i18n="btn_play">Play Now</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="games-section">
+      <div class="section-header">
+        <h2 class="section-title" data-i18n="categories">🗂️ Categories</h2>
+      </div>
+      <div class="categories" id="categoriesContainer">
+        <div class="cat-pill active" data-cat="all" onclick="filterCat(this,'all')"><span>🎮</span><span data-i18n="cat_all">All Games</span></div>
+        <div class="cat-pill" data-cat="action" onclick="filterCat(this,'action')"><span>⚔️</span><span data-i18n="cat_action">Action</span></div>
+        <div class="cat-pill" data-cat="racing" onclick="filterCat(this,'racing')"><span>🏎️</span><span data-i18n="cat_racing">Racing</span></div>
+        <div class="cat-pill" data-cat="puzzle" onclick="filterCat(this,'puzzle')"><span>🧩</span><span data-i18n="cat_puzzle">Puzzle</span></div>
+        <div class="cat-pill" data-cat="sports" onclick="filterCat(this,'sports')"><span>⚽</span><span data-i18n="cat_sports">Sports</span></div>
+        <div class="cat-pill" data-cat="adventure" onclick="filterCat(this,'adventure')"><span>🗺️</span><span data-i18n="cat_adventure">Adventure</span></div>
+        <div class="cat-pill" data-cat="shooter" onclick="filterCat(this,'shooter')"><span>🔫</span><span data-i18n="cat_shooter">Shooter</span></div>
+        <div class="cat-pill" data-cat="rpg" onclick="filterCat(this,'rpg')"><span>🧙</span><span data-i18n="cat_rpg">RPG</span></div>
+        <div class="cat-pill" data-cat="strategy" onclick="filterCat(this,'strategy')"><span>♟️</span><span data-i18n="cat_strategy">Strategy</span></div>
+        <div class="cat-pill" data-cat="arcade" onclick="filterCat(this,'arcade')"><span>🕹️</span><span data-i18n="cat_arcade">Arcade</span></div>
+      </div>
+    </section>
+
+    <!-- GAMES GRID -->
+    <section class="games-section">
+      <div class="section-header">
+        <h2 class="section-title" data-i18n="popular_games">🔥 Popular Games</h2>
+        <span class="see-all" data-i18n="see_all" onclick="filterCat(document.querySelector('[data-cat=all]'),'all')">See All →</span>
+      </div>
+      <div class="games-grid" id="gamesGrid"></div>
+      <div class="load-more-wrap">
+        <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span data-i18n="load_more">Load More Games</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- Ad 200×250 -->
+    <div class="ad-slot ad-slot-square">
+      <!--
+        <ins class="adsbygoogle" style="display:block;width:200px;height:250px"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+      <div class="ad-slot-label"><span>📢</span><span>Ad · 200×250</span></div>
+    </div>
+
+    <!-- Top Games -->
+    <div class="sidebar-widget">
+      <div class="widget-title" data-i18n="top_games">🏆 Top Games</div>
+      <div id="topGamesList"></div>
+    </div>
+
+    <!-- Ad 200×250 -->
+    <div class="ad-slot ad-slot-square">
+      <!--
+        <ins class="adsbygoogle" style="display:block;width:200px;height:250px"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+      <div class="ad-slot-label"><span>📢</span><span>Ad · 200×250</span></div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============================================================
+     GAME MODAL
+============================================================ -->
+<div class="modal-overlay" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="modalGameTitle">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="modal-game-icon" id="modalGameIcon">🎮</span>
+        <span id="modalGameTitle">Game Title</span>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="reloadGame()" title="Reload">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+        <button class="modal-btn" onclick="toggleFullscreen()" title="Fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+        <button class="modal-btn modal-close" onclick="closeModal()" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-iframe-wrap" id="iframeWrap">
+      <div class="modal-loading" id="modalLoading">
+        <div class="spinner"></div>
+        <p data-i18n="loading_game">Loading game...</p>
+      </div>
+      <iframe id="gameIframe" src="" allowfullscreen
+        allow="fullscreen; autoplay; encrypted-media"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        title="Game Frame" onload="onIframeLoad()"></iframe>
+    </div>
+
+    <div class="modal-footer">
+      <span id="modalFooterTitle" style="font-weight:600; color:var(--text-primary);"></span>
+      <div class="modal-footer-actions">
+        <button class="modal-footer-btn" onclick="shareGame()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          <span data-i18n="share">Share</span>
+        </button>
+        <button class="modal-footer-btn" onclick="favoriteGame()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          <span data-i18n="favorite">Favorite</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-icon">🎮</span><span class="logo-text">PlayGameZone</span></div>
+        <p data-i18n="footer_desc">Your ultimate destination for free online games. No downloads, no registration — just instant fun!</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_games">Games</h4>
+        <ul>
+          <li data-i18n="cat_action" onclick="filterCat(document.querySelector('[data-cat=action]'),'action')">Action</li>
+          <li data-i18n="cat_racing" onclick="filterCat(document.querySelector('[data-cat=racing]'),'racing')">Racing</li>
+          <li data-i18n="cat_puzzle" onclick="filterCat(document.querySelector('[data-cat=puzzle]'),'puzzle')">Puzzle</li>
+          <li data-i18n="cat_sports" onclick="filterCat(document.querySelector('[data-cat=sports]'),'sports')">Sports</li>
+          <li data-i18n="cat_rpg"    onclick="filterCat(document.querySelector('[data-cat=rpg]'),'rpg')">RPG</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_company">Company</h4>
+        <ul>
+          <li data-i18n="about">About Us</li>
+          <li data-i18n="contact">Contact</li>
+          <li data-i18n="advertise">Advertise</li>
+          <li data-i18n="careers">Careers</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer_legal">Legal</h4>
+        <ul>
+          <li data-i18n="privacy">Privacy Policy</li>
+          <li data-i18n="terms">Terms of Service</li>
+          <li data-i18n="cookies">Cookie Policy</li>
+          <li data-i18n="dmca">DMCA</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy" id="footerCopy">© 2025 PlayGameZone. All rights reserved.</span>
+      <div class="footer-links">
+        <a data-i18n="privacy">Privacy</a>
+        <a data-i18n="terms">Terms</a>
+        <a data-i18n="cookies">Cookies</a>
+      </div>
+      <div class="neon-badge">⚡ <span data-i18n="powered_by">Powered by HTML5</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- COOKIE BAR -->
+<div class="cookie-bar" id="cookieBar">
+  <p data-i18n="cookie_msg">We use cookies to enhance your experience. By continuing, you agree to our <a href="#">Privacy Policy</a>.</p>
+  <button class="cookie-accept" onclick="acceptCookies()" data-i18n="cookie_accept">Got it!</button>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ============================================================
+   DOMAIN PROTECTION
+   Allowed: playgamezone.github.io, zonedelta.github.io
+   Any other host is redirected to the primary site.
+============================================================ */
+(function domainGuard() {
+  'use strict';
+  const ALLOWED_DOMAINS = ['playgamezone.github.io', 'zonedelta.github.io'];
+  const PRIMARY         = 'https://playgamezone.github.io';
+  const host            = window.location.hostname;
+  const isLocal         = host === 'localhost' || host === '127.0.0.1' || host === '';
+  if (!isLocal && !ALLOWED_DOMAINS.includes(host)) {
+    window.location.href = PRIMARY;
+  }
+})();
+
+/* ============================================================
+   TRANSLATIONS
+============================================================ */
+const i18n = {
+  en: {
+    search_placeholder:'Search games...',
+    hero_title:'🎮 Play Free Games Online',
+    hero_desc:'Thousands of free browser games — no download, no login required. Just click and play!',
+    stat_games:'Games', stat_players:'Players', stat_free:'Free',
+    featured_game:'⭐ Featured Game',
+    game_of_week:'🔥 Game of the Week',
+    featured_desc:'Experience the ultimate street racing adventure. Drift through neon-lit city circuits and beat the clock!',
+    categories:'🗂️ Categories',
+    cat_all:'All Games', cat_action:'Action', cat_racing:'Racing', cat_puzzle:'Puzzle',
+    cat_sports:'Sports', cat_adventure:'Adventure', cat_shooter:'Shooter',
+    cat_rpg:'RPG', cat_strategy:'Strategy', cat_arcade:'Arcade',
+    popular_games:'🔥 Popular Games', see_all:'See All →', btn_play:'Play Now',
+    load_more:'Load More Games', top_games:'🏆 Top Games', loading_game:'Loading game...',
+    share:'Share', favorite:'Favorite',
+    footer_desc:'Your ultimate destination for free online games. No downloads, no registration — just instant fun!',
+    footer_games:'Games', footer_company:'Company', footer_legal:'Legal',
+    about:'About Us', contact:'Contact', advertise:'Advertise', careers:'Careers',
+    privacy:'Privacy Policy', terms:'Terms of Service', cookies:'Cookie Policy', dmca:'DMCA',
+    powered_by:'Powered by HTML5',
+    cookie_msg:'We use cookies to enhance your experience. By continuing, you agree to our Privacy Policy.',
+    cookie_accept:'Got it!',
+    footer_copy:'© {year} PlayGameZone. All rights reserved.',
+    toast_share:'🔗 Link copied to clipboard!', toast_fav:'⭐ Added to favorites!',
+    no_results:'No games found for',
+  },
+  tr: {
+    search_placeholder:'Oyun ara...',
+    hero_title:'🎮 Ücretsiz Oyunları Oyna',
+    hero_desc:'Binlerce ücretsiz tarayıcı oyunu — indirme, kayıt gerekmiyor. Tıkla ve oyna!',
+    stat_games:'Oyun', stat_players:'Oyuncu', stat_free:'Ücretsiz',
+    featured_game:'⭐ Öne Çıkan Oyun',
+    game_of_week:'🔥 Haftanın Oyunu',
+    featured_desc:'Nihai sokak yarışı macerasını yaşa. Neon ışıklı şehir pistlerinde drift yap ve saati yen!',
+    categories:'🗂️ Kategoriler',
+    cat_all:'Tüm Oyunlar', cat_action:'Aksiyon', cat_racing:'Yarış', cat_puzzle:'Bulmaca',
+    cat_sports:'Spor', cat_adventure:'Macera', cat_shooter:'Nişancı',
+    cat_rpg:'Rol Yapma', cat_strategy:'Strateji', cat_arcade:'Arcade',
+    popular_games:'🔥 Popüler Oyunlar', see_all:'Tümünü Gör →', btn_play:'Oyna',
+    load_more:'Daha Fazla Oyun', top_games:'🏆 En İyi Oyunlar', loading_game:'Oyun yükleniyor...',
+    share:'Paylaş', favorite:'Favorilere Ekle',
+    footer_desc:'Ücretsiz çevrimiçi oyunlar için en iyi adres. İndirme yok, kayıt yok!',
+    footer_games:'Oyunlar', footer_company:'Şirket', footer_legal:'Hukuki',
+    about:'Hakkımızda', contact:'İletişim', advertise:'Reklam Ver', careers:'Kariyer',
+    privacy:'Gizlilik Politikası', terms:'Kullanım Şartları', cookies:'Çerez Politikası', dmca:'DMCA',
+    powered_by:'HTML5 ile Güçlü',
+    cookie_msg:'Deneyiminizi geliştirmek için çerez kullanıyoruz. Devam ederek Gizlilik Politikamızı kabul edersiniz.',
+    cookie_accept:'Anladım!',
+    footer_copy:'© {year} PlayGameZone. Tüm hakları saklıdır.',
+    toast_share:'🔗 Bağlantı kopyalandı!', toast_fav:'⭐ Favorilere eklendi!',
+    no_results:'Bulunamadı:',
+  },
+  ru: {
+    search_placeholder:'Искать игры...',
+    hero_title:'🎮 Играй в бесплатные игры онлайн',
+    hero_desc:'Тысячи бесплатных браузерных игр — без загрузки и регистрации. Просто нажми и играй!',
+    stat_games:'Игры', stat_players:'Игроки', stat_free:'Бесплатно',
+    featured_game:'⭐ Избранная игра',
+    game_of_week:'🔥 Игра недели',
+    featured_desc:'Испытай настоящие уличные гонки. Дрифти по неоновым трассам и побей рекорд!',
+    categories:'🗂️ Категории',
+    cat_all:'Все игры', cat_action:'Экшн', cat_racing:'Гонки', cat_puzzle:'Головоломки',
+    cat_sports:'Спорт', cat_adventure:'Приключения', cat_shooter:'Шутер',
+    cat_rpg:'РПГ', cat_strategy:'Стратегия', cat_arcade:'Аркада',
+    popular_games:'🔥 Популярные игры', see_all:'Смотреть все →', btn_play:'Играть',
+    load_more:'Загрузить ещё', top_games:'🏆 Топ игр', loading_game:'Загрузка...',
+    share:'Поделиться', favorite:'В избранное',
+    footer_desc:'Лучшее место для бесплатных онлайн-игр. Без загрузок и регистрации!',
+    footer_games:'Игры', footer_company:'Компания', footer_legal:'Правовая',
+    about:'О нас', contact:'Контакты', advertise:'Реклама', careers:'Карьера',
+    privacy:'Конфиденциальность', terms:'Условия', cookies:'Cookies', dmca:'DMCA',
+    powered_by:'На базе HTML5',
+    cookie_msg:'Мы используем cookies. Продолжая, вы соглашаетесь с нашей политикой конфиденциальности.',
+    cookie_accept:'Понятно!',
+    footer_copy:'© {year} PlayGameZone. Все права защищены.',
+    toast_share:'🔗 Ссылка скопирована!', toast_fav:'⭐ Добавлено в избранное!',
+    no_results:'Ничего не найдено:',
+  },
+  de: {
+    search_placeholder:'Spiele suchen...',
+    hero_title:'🎮 Kostenlose Spiele Online Spielen',
+    hero_desc:'Tausende kostenlose Browserspiele — kein Download, keine Anmeldung. Einfach spielen!',
+    stat_games:'Spiele', stat_players:'Spieler', stat_free:'Kostenlos',
+    featured_game:'⭐ Empfohlenes Spiel',
+    game_of_week:'🔥 Spiel der Woche',
+    featured_desc:'Erlebe das ultimative Straßenrennabenteuer. Drifte durch Neon-Rennstrecken!',
+    categories:'🗂️ Kategorien',
+    cat_all:'Alle Spiele', cat_action:'Aktion', cat_racing:'Rennen', cat_puzzle:'Rätsel',
+    cat_sports:'Sport', cat_adventure:'Abenteuer', cat_shooter:'Shooter',
+    cat_rpg:'Rollenspiel', cat_strategy:'Strategie', cat_arcade:'Arcade',
+    popular_games:'🔥 Beliebte Spiele', see_all:'Alle anzeigen →', btn_play:'Spielen',
+    load_more:'Mehr laden', top_games:'🏆 Top Spiele', loading_game:'Spiel wird geladen...',
+    share:'Teilen', favorite:'Favorit',
+    footer_desc:'Ihr Ziel für kostenlose Online-Spiele. Keine Downloads, keine Registrierung!',
+    footer_games:'Spiele', footer_company:'Unternehmen', footer_legal:'Rechtliches',
+    about:'Über uns', contact:'Kontakt', advertise:'Werben', careers:'Karriere',
+    privacy:'Datenschutz', terms:'Nutzungsbedingungen', cookies:'Cookie-Richtlinie', dmca:'DMCA',
+    powered_by:'Betrieben von HTML5',
+    cookie_msg:'Wir verwenden Cookies. Durch Fortfahren stimmen Sie unserer Datenschutzrichtlinie zu.',
+    cookie_accept:'Verstanden!',
+    footer_copy:'© {year} PlayGameZone. Alle Rechte vorbehalten.',
+    toast_share:'🔗 Link kopiert!', toast_fav:'⭐ Zu Favoriten hinzugefügt!',
+    no_results:'Keine Spiele gefunden:',
+  }
+};
+
+const LANG_META = {
+  en: { flag:'🇬🇧', code:'EN', html:'en' },
+  tr: { flag:'🇹🇷', code:'TR', html:'tr' },
+  ru: { flag:'🇷🇺', code:'RU', html:'ru' },
+  de: { flag:'🇩🇪', code:'DE', html:'de' }
+};
+
+let currentLang = localStorage.getItem('pgz_lang') || 'en';
+
+function t(key) {
+  return (i18n[currentLang]?.[key]) ?? (i18n.en[key]) ?? key;
+}
+
+function applyLang() {
+  const yr = new Date().getFullYear();
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+
+  // Footer copy with dynamic year
+  const fc = document.getElementById('footerCopy');
+  if (fc) fc.textContent = t('footer_copy').replace('{year}', yr);
+
+  // html lang
+  document.documentElement.lang = LANG_META[currentLang].html;
+
+  // Dropdown state
+  document.getElementById('currentFlag').textContent     = LANG_META[currentLang].flag;
+  document.getElementById('currentLangCode').textContent = LANG_META[currentLang].code;
+  document.querySelectorAll('.lang-option').forEach(o => {
+    o.classList.toggle('active', o.dataset.lang === currentLang);
+  });
+
+  // Refresh play buttons
+  document.querySelectorAll('.play-btn').forEach(b => b.textContent = t('btn_play'));
+  document.querySelectorAll('[data-i18n="loading_game"]').forEach(el => {
+    el.textContent = t('loading_game');
+  });
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pgz_lang', lang);
+  applyLang();
+  closeLangDropdown();
+}
+
+/* ============================================================
+   LANG DROPDOWN
+============================================================ */
+function toggleLang() {
+  const dd  = document.getElementById('langDropdown');
+  const btn = document.getElementById('langBtn');
+  const open = dd.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+function closeLangDropdown() {
+  document.getElementById('langDropdown').classList.remove('open');
+  document.getElementById('langBtn').setAttribute('aria-expanded', 'false');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('langDropdown').contains(e.target)) closeLangDropdown();
+});
+
+/* ============================================================
+   MOBILE SEARCH TOGGLE
+============================================================ */
+function toggleMobileSearch() {
+  const ms = document.getElementById('mobileSearch');
+  ms.style.display = ms.style.display === 'none' ? 'block' : 'none';
+}
+
+/* ============================================================
+   GAME DATA
+============================================================ */
+const GAMES_DATA = [
+  { id:1,  title:'Space Invaders X',      emoji:'👾', cat:'shooter',   rating:4.8, badge:'HOT', url:'https://www.example.com/game/1'  },
+  { id:2,  title:'Turbo Drift Racing',    emoji:'🏎️', cat:'racing',    rating:4.9, badge:'NEW', url:'https://www.example.com/game/2'  },
+  { id:3,  title:'Dungeon Quest RPG',     emoji:'🧙', cat:'rpg',       rating:4.7, badge:null,  url:'https://www.example.com/game/3'  },
+  { id:4,  title:'Block Puzzle Master',   emoji:'🧩', cat:'puzzle',    rating:4.5, badge:null,  url:'https://www.example.com/game/4'  },
+  { id:5,  title:'Soccer Stars 2025',     emoji:'⚽', cat:'sports',    rating:4.6, badge:'HOT', url:'https://www.example.com/game/5'  },
+  { id:6,  title:'Cyber Ninja Strike',    emoji:'🥷', cat:'action',    rating:4.7, badge:null,  url:'https://www.example.com/game/6'  },
+  { id:7,  title:'Island Adventure',      emoji:'🏝️', cat:'adventure', rating:4.4, badge:'NEW', url:'https://www.example.com/game/7'  },
+  { id:8,  title:'Tank Blitz Arena',      emoji:'🪖', cat:'action',    rating:4.5, badge:null,  url:'https://www.example.com/game/8'  },
+  { id:9,  title:'Chess Ultra',           emoji:'♟️', cat:'strategy',  rating:4.9, badge:null,  url:'https://www.example.com/game/9'  },
+  { id:10, title:'Fruit Slice Mania',     emoji:'🍉', cat:'arcade',    rating:4.3, badge:null,  url:'https://www.example.com/game/10' },
+  { id:11, title:'Rally Road Rush',       emoji:'🚗', cat:'racing',    rating:4.6, badge:null,  url:'https://www.example.com/game/11' },
+  { id:12, title:'Sky Shooter Pro',       emoji:'✈️', cat:'shooter',   rating:4.4, badge:'HOT', url:'https://www.example.com/game/12' },
+  { id:13, title:'Zombie Apocalypse',     emoji:'🧟', cat:'action',    rating:4.8, badge:null,  url:'https://www.example.com/game/13' },
+  { id:14, title:'Word Brain Trainer',    emoji:'📝', cat:'puzzle',    rating:4.2, badge:null,  url:'https://www.example.com/game/14' },
+  { id:15, title:'Basketball Legends',    emoji:'🏀', cat:'sports',    rating:4.7, badge:'NEW', url:'https://www.example.com/game/15' },
+  { id:16, title:'Dragon Quest Hero',     emoji:'🐉', cat:'rpg',       rating:4.6, badge:null,  url:'https://www.example.com/game/16' },
+  { id:17, title:'Tower Defense Wars',    emoji:'🏰', cat:'strategy',  rating:4.5, badge:null,  url:'https://www.example.com/game/17' },
+  { id:18, title:'Pac-Man Remix',         emoji:'👻', cat:'arcade',    rating:4.8, badge:null,  url:'https://www.example.com/game/18' },
+  { id:19, title:'Forest Explorer',       emoji:'🌲', cat:'adventure', rating:4.3, badge:null,  url:'https://www.example.com/game/19' },
+  { id:20, title:'Missile Command 3D',    emoji:'🚀', cat:'shooter',   rating:4.6, badge:'HOT', url:'https://www.example.com/game/20' },
+  { id:21, title:'Moto Cross Rider',      emoji:'🏍️', cat:'racing',    rating:4.4, badge:null,  url:'https://www.example.com/game/21' },
+  { id:22, title:'Jewel Match Quest',     emoji:'💎', cat:'puzzle',    rating:4.5, badge:null,  url:'https://www.example.com/game/22' },
+  { id:23, title:'Street Fighter Online', emoji:'🥊', cat:'action',    rating:4.7, badge:'NEW', url:'https://www.example.com/game/23' },
+  { id:24, title:'Ice Hockey Pro',        emoji:'🏒', cat:'sports',    rating:4.5, badge:null,  url:'https://www.example.com/game/24' },
+];
+
+const FEATURED_GAME = { id:'featured', title:'Turbo Drift Racing', emoji:'🏎️', url:'https://www.example.com/game/2' };
+
+let visibleCount  = 12;
+let currentFilter = 'all';
+let currentSearch = '';
+
+function filteredGames() {
+  return GAMES_DATA.filter(g => {
+    const matchCat    = currentFilter === 'all' || g.cat === currentFilter;
+    const matchSearch = !currentSearch || g.title.toLowerCase().includes(currentSearch.toLowerCase());
+    return matchCat && matchSearch;
+  });
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function createGameCard(game) {
+  const card = document.createElement('div');
+  card.className   = 'game-card';
+  card.dataset.id  = game.id;
+  card.dataset.cat = game.cat;
+  card.innerHTML = `
+    <div style="position:relative;">
+      <div class="game-thumb-placeholder">
+        <span style="position:relative;z-index:1;">${game.emoji}</span>
+      </div>
+      ${game.badge ? `<div class="game-badge">${escHtml(game.badge)}</div>` : ''}
+      <div class="game-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+    </div>
+    <div class="game-info">
+      <div class="game-title">${escHtml(game.title)}</div>
+      <div class="game-meta">
+        <span class="game-category">${escHtml(game.cat)}</span>
+        <span class="game-rating">★ ${game.rating}</span>
+      </div>
+      <button class="play-btn">${t('btn_play')}</button>
+    </div>`;
+  card.addEventListener('click', () => openModal(game));
+  return card;
+}
+
+function renderGames() {
+  const grid  = document.getElementById('gamesGrid');
+  const games = filteredGames();
+  const show  = games.slice(0, visibleCount);
+  grid.innerHTML = '';
+  if (show.length === 0) {
+    grid.innerHTML = `<div class="no-results"><span>🔍</span>${t('no_results')} "${escHtml(currentSearch)}"</div>`;
+  } else {
+    show.forEach(g => grid.appendChild(createGameCard(g)));
+  }
+  const lmb = document.getElementById('loadMoreBtn');
+  lmb.style.display = games.length > visibleCount ? 'inline-flex' : 'none';
+}
+
+function loadMore() {
+  visibleCount += 8;
+  renderGames();
+}
+
+/* ============================================================
+   CATEGORY FILTER
+============================================================ */
+function filterCat(el, cat) {
+  if (!el) return;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = cat;
+  visibleCount  = 12;
+  renderGames();
+}
+
+/* ============================================================
+   SEARCH
+============================================================ */
+function handleSearch(val) {
+  currentSearch = val.trim();
+  visibleCount  = 12;
+  currentFilter = 'all';
+  document.querySelectorAll('.cat-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.cat === 'all');
+  });
+  renderGames();
+}
+document.getElementById('searchInput').addEventListener('input', e => handleSearch(e.target.value));
+document.getElementById('searchInputMobile').addEventListener('input', e => {
+  document.getElementById('searchInput').value = e.target.value;
+  handleSearch(e.target.value);
+});
+
+/* ============================================================
+   TOP GAMES SIDEBAR
+============================================================ */
+function renderTopGames() {
+  const list = document.getElementById('topGamesList');
+  const top  = [...GAMES_DATA].sort((a,b) => b.rating - a.rating).slice(0, 6);
+  list.innerHTML = top.map((g,i) => `
+    <div class="top-game-item" onclick="openModal(GAMES_DATA.find(x=>x.id===${g.id}))">
+      <span class="top-rank">#${i+1}</span>
+      <div class="top-thumb">${g.emoji}</div>
+      <div class="top-name">${escHtml(g.title)}</div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+let currentGame = null;
+
+function openModal(game) {
+  if (!game) return;
+  currentGame = game;
+  document.getElementById('modalGameIcon').textContent    = game.emoji || '🎮';
+  document.getElementById('modalGameTitle').textContent   = game.title;
+  document.getElementById('modalFooterTitle').textContent = game.title;
+
+  const iframe  = document.getElementById('gameIframe');
+  const loading = document.getElementById('modalLoading');
+  loading.style.display = 'flex';
+  iframe.src = game.url || '';
+
+  const overlay = document.getElementById('gameModal');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('gameModal').classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => { document.getElementById('gameIframe').src = ''; }, 300);
+}
+
+function onIframeLoad() {
+  document.getElementById('modalLoading').style.display = 'none';
+}
+
+function reloadGame() {
+  if (!currentGame) return;
+  document.getElementById('modalLoading').style.display = 'flex';
+  document.getElementById('gameIframe').src = currentGame.url;
+}
+
+function toggleFullscreen() {
+  const box = document.getElementById('modalBox');
+  if (!document.fullscreenElement) {
+    (box.requestFullscreen || box.webkitRequestFullscreen || box.mozRequestFullScreen).call(box);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen).call(document);
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('gameModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ============================================================
+   SHARE & FAVORITE
+============================================================ */
+function shareGame() {
+  const url = window.location.href;
+  if (navigator.share && currentGame) {
+    navigator.share({ title: currentGame.title, url }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => showToast(t('toast_share')));
+  } else {
+    showToast(t('toast_share'));
+  }
+}
+function favoriteGame() { showToast(t('toast_fav')); }
+
+/* ============================================================
+   TOAST
+============================================================ */
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className   = 'toast';
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.cssText += 'opacity:0;transform:translateX(40px);transition:all .3s ease;';
+    setTimeout(() => t.remove(), 350);
+  }, 3000);
+}
+
+/* ============================================================
+   COOKIE
+============================================================ */
+function acceptCookies() {
+  localStorage.setItem('pgz_cookies','1');
+  document.getElementById('cookieBar').style.display = 'none';
+}
+if (localStorage.getItem('pgz_cookies')) {
+  document.getElementById('cookieBar').style.display = 'none';
+}
+
+/* ============================================================
+   SCROLL TOP
+============================================================ */
+function scrollToTop() { window.scrollTo({ top:0, behavior:'smooth' }); }
+
+/* ============================================================
+   INIT
+============================================================ */
+(function init() {
+  applyLang();
+  renderGames();
+  renderTopGames();
+})();
+</script>
+</body>
+</html>
